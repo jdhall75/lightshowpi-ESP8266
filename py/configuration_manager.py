@@ -397,6 +397,9 @@ class Configuration(object):
         ntwrk["port"] = self.config.getint('network', 'port')
         ntwrk["buffer"] = self.config.getint('network', 'buffer')
 
+        # get the address to bind the network broadcast to
+        ntwrk['address'] = self.config.get('network', 'address')
+
         if len(self.config.get('network', 'channels')) == 0:
             channels = [_ for _ in range(self.gpio_len)]
         else:

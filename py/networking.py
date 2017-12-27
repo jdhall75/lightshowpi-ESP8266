@@ -31,6 +31,7 @@ class Networking(object):
 
         self.networking = cm.network.networking
         self.port = cm.network.port
+        self.address = cm.network.address
         self.network_buffer = cm.network.buffer
         self.channels = cm.network.channels
         self.playing = False
@@ -51,8 +52,9 @@ class Networking(object):
         print "streaming on port: " + str(self.port)
         try:
             self.network_stream = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.network_stream.bind(('', 0))
+            self.network_stream.bind((self.address, 0))
             self.network_stream.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            #self.network_stream.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 512) 
             log.info("streaming on port: " + str(self.port))
         except socket.error, msg:
             log.error('Failed create socket or bind. Error code: ' +
@@ -110,13 +112,26 @@ class Networking(object):
         :type args: list | tuple
         """
         if self.networking == "server":
+            import json
             try:
-                data = cPickle.dumps(args)
-                self.network_stream.sendto(data, ('<broadcast>', self.port))
+                # if the data is in an ndarray then 
+                # convert it to a list
+                #
+                if isinstance(args[0], np.ndarray):
+                    data = args[0].tolist()
+                else:
+                    data = list(args[0])
+
+                j_data = json.dumps(data)
+                #print(j_data)
+                #data = cPickle.dumps(args)
+                self.network_stream.sendto(j_data, ('<broadcast>', self.port))
             except socket.error, msg:
                 if msg[0] != 9:
                     log.error(str(msg[0]) + ' ' + msg[1])
                     print str(msg[0]) + ' ' + msg[1]
+            except TypeError:
+                print type(args[0])
 
     def set_playing(self):
         """Set a flag for playing,

@@ -268,8 +268,8 @@ class Lightshow(object):
         if not hasattr(brightness, "__len__"):
             brightness = np.array([brightness])
 
-        for pin in range(len(brightness[:self.physical_gpio_len])):
-            hc.set_light(pin, True, brightness[pin])
+            for pin in range(len(brightness[:self.physical_gpio_len])):
+                hc.set_light(pin, True, brightness[pin])
 
         if hc.led:
             if cm.led.led_channel_configuration == "EXTEND":

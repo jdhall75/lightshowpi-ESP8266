@@ -240,6 +240,7 @@ class Hardware(object):
         """
         for pin in range(cm.hardware.physical_gpio_len):
             self.set_light(pin, use_always_onoff, 1.0)
+            time.sleep(.1)
 
         if self.led:
             for led_instance in self.led:
@@ -255,7 +256,8 @@ class Hardware(object):
         :param use_always_onoff: int or boolean, should always on/off be used
         """
         for pin in range(cm.hardware.physical_gpio_len):
-            self.set_light(pin, use_always_onoff, 0)
+            self.set_light(pin, use_always_onoff, 0.0)
+            time.sleep(.1)
 
         if self.led:
             for led_instance in self.led:
@@ -313,8 +315,12 @@ class Hardware(object):
         :type brightness: float
         """
         if not self.playing and self.server:
-            self.broadcast(cm.hardware.gpio_pins.index(cm.hardware.gpio_pins[pin]),
-                           brightness)
+            data = [brightness] * cm.hardware.gpio_len
+
+            #self.broadcast(cm.hardware.gpio_pins.index(cm.hardware.gpio_pins[pin]),
+            #               brightness)
+            for x in range(10):
+                self.broadcast(data)
 
         self.channels[pin].set_action(use_overrides, brightness)
 
@@ -456,7 +462,7 @@ def light_on(pins, override=False, brightness=1.0):
         if not cm.hardware.is_pin_pwm[pin]:
             brightness = 1
 
-        hc.set_light(pin, use_overrides=override, brightness=brightness)
+    hc.set_light(pin, use_overrides=override, brightness=brightness)
 
 
 def light_off(pins, override=False, brightness=0.0):
@@ -471,6 +477,8 @@ def light_off(pins, override=False, brightness=0.0):
 
     for pin in pins:
         hc.set_light(pin, use_overrides=override, brightness=brightness)
+        time.sleep(.2)
+
 
 
 def fade(from_test=False):
@@ -853,6 +861,7 @@ def main():
             for light in lights:
                 light_on(light)
         else:
+            print("Lights and gpio_len are equal")
             hc.turn_on_lights(use_always_onoff=True)
 
     elif state == "fade":
