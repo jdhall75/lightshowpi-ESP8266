@@ -1,3 +1,47 @@
+LightshowPi ESP8266 branch
+==========================
+
+I came across this project last year and had a lot of fun with it.  I built the control box with mechanical relays, 4-gang outlet box and 8 channels of light control goodness. This year we were spreading the lights out even more and I wanted to distribute the control over Wi-Fi using the ESP8266 modules.  Here is a rundown of what I have changed and the hardware / software that I used to make the light show this year.
+
+This is a lightshowpi for that changes the networking portion of the program.
+
+## Possibly broken items
+* Flash and individual testing
+* Use of RPi GPIO pins and networking together.
+
+## Items used in my setup
+* Software
+	* lightshowpi - of course
+	* [Hostapd](https://w1.fi/hostapd/)
+	* [Mopidy](https://www.mopidy.com/)
+	* [Busybox uDHCP server](https://busybox.net/)
+* Hardware (If you dont mind pure chineseium)
+	* Raspberrypi 3 - not chineseium
+	* [ESP8266](https://www.aliexpress.com/item/ESP8266-ESP12-ESP-12-WeMos-D1-Mini-WIFI-Dev-Kit-Development-Board-NodeMCU-Lua/32653918483.html?spm=a2g0s.9042311.0.0.oLdCSW)
+	* [5V 4 Channel OMRON SSR](https://www.aliexpress.com/item/5V-4-Channel-OMRON-SSR-High-Level-Solid-State-Relay-Module-For-250V2A/32803647785.html?spm=a2g0s.9042311.0.0.v7GyvF)
+	* [WinnerEco 3000mW](http://a.co/hJGecdp) wireless card. RaLink3070 Chipset
+
+## Items to be addressed
+When I threw this together it wasn't really well thought out.. Christmas was coming!!  So here are some thoughts on software - things I may have broke and things I would like to add.
+
+### networking.py
+
+The edits I made here changed the numpy array into a python list which then gets dumped into a json array for transmission across the network.  The json array doesn't get byte encoded before transmission, but it seems to work fine'ish.  Plus I didn't want to deal with the endian'ness of the two different systems. I wasn't sure if it was going to be a direct translation between the 8266 and RPi.
+
+Using json in this way allows us to use any networked endpoint that we want to control the lights
+
+### hardware_controller.py
+
+The hardware controller, I'm not sure here, but it seems to send a single packet while doing the "flash" test.  There is a lot that didn't get tested while I was trying to make things work.
+
+### Running as root?
+
+I understand this thing is only running for a couple of weeks during December, but mine is connected to the internet and has a Wi-Fi AP running on it.. Leaves me feeling kind of exposed in a cool breeze.. Lets see if we can find a way to start elevated then drop back to an unprivileged user.
+
+
+# Original README.md contents below this point
+
+
 [http://lightshowpi.org/](http://lightshowpi.org/)
 
 All files here are free to use under the BSD License (see the LICENSE file for details).  All we
